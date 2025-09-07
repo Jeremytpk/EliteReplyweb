@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteReply - Conditions d'Utilisation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .text-green { color: #4CAF50; }
+        .bg-green { background-color: #4CAF50; }
+        .text-blue { color: #2196F3; }
+        .bg-blue { background-color: #2196F3; }
+        .border-green { border-color: #4CAF50; }
+        .border-blue { border-color: #2196F3; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                <img src="assets/logo.png" alt="Logo EliteReply" class="h-10 w-10">
+                <span class="text-xl font-bold text-gray-900">EliteReply</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="clients.html" class="text-gray-600 hover:text-blue transition-colors">Clients</a>
+                <a href="partenaires.html" class="text-gray-600 hover:text-blue transition-colors">Partenaires</a>
+                <a href="tarifs.html" class="text-gray-600 hover:text-blue transition-colors">Tarifs</a>
+                <a href="politique.html" class="text-gray-600 hover:text-blue transition-colors">Politique de confidentialité</a>
+                <a href="conditions.html" class="text-gray-600 hover:text-blue transition-colors">Conditions d'utilisation</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg py-2">
+            <a href="clients.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Clients</a>
+            <a href="partenaires.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Partenaires</a>
+            <a href="tarifs.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Tarifs</a>
+            <a href="politique.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Politique de confidentialité</a>
+            <a href="conditions.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Conditions d'utilisation</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Terms of Service Section -->
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-center mb-8">Conditions d'Utilisation</h1>
+                <div class="bg-white rounded-xl shadow-md p-8">
+                    <h2 class="text-xl font-semibold mb-2">1. Acceptation des Conditions</h2>
+                    <p class="mb-4">
+                        En utilisant le site web et les services d'EliteReply, vous acceptez d'être lié par les présentes Conditions d'Utilisation.
+                    </p>
+                    <h2 class="text-xl font-semibold mt-6 mb-2">2. Utilisation du Service</h2>
+                    <p class="mb-4">
+                        Nos services sont destinés à un usage professionnel et personnel. Vous ne devez pas utiliser nos services à des fins illégales ou non autorisées.
+                    </p>
+                    <h2 class="text-xl font-semibold mt-6 mb-2">3. Responsabilité</h2>
+                    <p class="mb-4">
+                        EliteReply n'est pas responsable des dommages directs ou indirects résultant de l'utilisation de nos services. Nous nous efforçons de garantir la fiabilité de notre plateforme, mais nous ne pouvons garantir une disponibilité continue.
+                    </p>
+                    <h2 class="text-xl font-semibold mt-6 mb-2">4. Compte Utilisateur</h2>
+                    <p class="mb-4">
+                        Vous êtes responsable de la confidentialité de votre compte et de votre mot de passe, et vous êtes entièrement responsable de toutes les activités qui se produisent sous votre compte.
+                    </p>
+                    <h2 class="text-xl font-semibold mt-6 mb-2">5. Résiliation</h2>
+                    <p>
+                        Nous nous réservons le droit de résilier ou de suspendre votre accès à nos services, sans préavis, pour toute violation de ces Conditions.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-6">
+                <a href="politique.html" class="hover:text-blue transition-colors">Politique de confidentialité</a>
+                <a href="conditions.html" class="hover:text-blue transition-colors">Conditions d'utilisation</a>
+            </div>
+            <p class="text-gray-400">© 2024 EliteReply. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

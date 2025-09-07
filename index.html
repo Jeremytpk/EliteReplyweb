@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteReply - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .text-green { color: #4CAF50; }
+        .bg-green { background-color: #4CAF50; }
+        .text-blue { color: #2196F3; }
+        .bg-blue { background-color: #2196F3; }
+        .border-green { border-color: #4CAF50; }
+        .border-blue { border-color: #2196F3; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                <img src="assets/logo.png" alt="Logo EliteReply" class="h-10 w-10">
+                <span class="text-xl font-bold text-gray-900">EliteReply</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="clients.html" class="text-gray-600 hover:text-blue transition-colors">Clients</a>
+                <a href="partenaires.html" class="text-gray-600 hover:text-blue transition-colors">Partenaires</a>
+                <a href="tarifs.html" class="text-gray-600 hover:text-blue transition-colors">Tarifs</a>
+                <a href="politique.html" class="text-gray-600 hover:text-blue transition-colors">Politique de confidentialité</a>
+                <a href="conditions.html" class="text-gray-600 hover:text-blue transition-colors">Conditions d'utilisation</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg py-2">
+            <a href="clients.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Clients</a>
+            <a href="partenaires.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Partenaires</a>
+            <a href="tarifs.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Tarifs</a>
+            <a href="politique.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Politique de confidentialité</a>
+            <a href="conditions.html" class="block px-6 py-2 text-gray-700 hover:bg-gray-100">Conditions d'utilisation</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-gray-100 py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                    L'Elite du Service Client en <span class="text-blue">Afrique</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                    EliteReply est un pont numérique reliant les Africains du monde entier aux services et au cœur de l'Afrique. Obtenez toute l'information locale, réservez des rendez-vous et bien plus, grâce à notre assistant IA, Jey.
+                </p>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                    <a href="clients.html" class="bg-blue text-white px-8 py-3 rounded-full font-semibold hover:bg-opacity-90 transition-all shadow-md">
+                        Pour les Clients
+                    </a>
+                    <a href="partenaires.html" class="bg-green text-white px-8 py-3 rounded-full font-semibold hover:bg-opacity-90 transition-all shadow-md">
+                        Devenir Partenaire
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold mb-4">À propos d'EliteReply</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mb-8">
+                    Notre mission est de simplifier l'accès aux services locaux pour les Congolais, où qu'ils soient. En fusionnant l'intelligence artificielle et le contact humain, nous créons une expérience de service client unique, efficace et personnalisée.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8 text-left">
+                    <div class="p-6 bg-white rounded-xl shadow-md border border-gray-200">
+                        <img src="assets/vector/image1.png" alt="Illustration d'efficacité" class="h-40 w-full object-contain mb-4">
+                        <h3 class="font-bold text-xl mb-2">Efficacité</h3>
+                        <p class="text-gray-600">
+                            Notre assistant IA, Jey, gère les demandes les plus courantes instantanément, vous faisant gagner un temps précieux.
+                        </p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-md border border-gray-200">
+                        <img src="assets/vector/image2.png" alt="Illustration d'accessibilité" class="h-40 w-full object-contain mb-4">
+                        <h3 class="font-bold text-xl mb-2">Accessibilité</h3>
+                        <p class="text-gray-600">
+                            EliteReply est conçu pour être simple à utiliser, même pour ceux qui ne sont pas technophiles.
+                        </p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-md border border-gray-200">
+                        <img src="assets/vector/image3.png" alt="Illustration de connexion humaine" class="h-40 w-full object-contain mb-4">
+                        <h3 class="font-bold text-xl mb-2">Connexion Humaine</h3>
+                        <p class="text-gray-600">
+                            Pour les questions plus complexes, vous pouvez toujours demander à parler à un conseiller humain.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-6">
+                <a href="politique.html" class="hover:text-blue transition-colors">Politique de confidentialité</a>
+                <a href="conditions.html" class="hover:text-blue transition-colors">Conditions d'utilisation</a>
+            </div>
+            <p class="text-gray-400">© 2024 EliteReply. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
