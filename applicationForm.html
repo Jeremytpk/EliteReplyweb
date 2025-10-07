@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteReply - Candidature Partenaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="components/componentLoader.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
+        import firebaseConfig from './firebaseConfig.js';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        window.submitApplication = async function() {
+            const form = document.getElementById('partnerForm');
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingDiv = document.getElementById('loading');
+            const successDiv = document.getElementById('success');
+            const errorDiv = document.getElementById('error');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Envoi en cours...';
+            loadingDiv.classList.remove('hidden');
+            successDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            try {
+                let logoUrl = '';
+                
+                // Upload logo if provided
+                const logoFile = formData.get('businessLogo');
+                if (logoFile && logoFile.size > 0) {
+                    const logoRef = ref(storage, `partner-logos/${Date.now()}_${logoFile.name}`);
+                    const logoSnapshot = await uploadBytes(logoRef, logoFile);
+                    logoUrl = await getDownloadURL(logoSnapshot.ref);
+                }
+
+                // Prepare application data
+                const applicationData = {
+                    businessInfo: {
+                        name: formData.get('businessName'),
+                        address: formData.get('businessAddress'),
+                        city: formData.get('businessCity'),
+                        country: formData.get('businessCountry'),
+                        category: formData.get('businessCategory'),
+                        description: formData.get('businessDescription'),
+                        website: formData.get('businessWebsite') || '',
+                        logoUrl: logoUrl
+                    },
+                    applicantInfo: {
+                        firstName: formData.get('firstName'),
+                        lastName: formData.get('lastName'),
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        hasEliteReplyAccount: formData.get('hasEliteReplyAccount')
+                    },
+                    submissionDate: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                // Save to Firestore applications collection
+                console.log('Saving application to Firestore...');
+                const docRef = await addDoc(collection(db, 'applications'), applicationData);
+                console.log('Application saved successfully with ID:', docRef.id);
+
+                // Try to send email notification (optional - won't fail if Cloud Function doesn't exist)
+                try {
+                    const cloudFunctionUrl = 'https://us-central1-elitereply-bd74d.cloudfunctions.net/sendPartnerApplicationEmail';
+                    const emailResponse = await fetch(cloudFunctionUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            applicationId: docRef.id,
+                            applicationData: applicationData
+                        })
+                    });
+                    
+                    if (emailResponse.ok) {
+                        console.log('Email notification sent successfully');
+                    } else {
+                        console.warn('Email notification failed, but application was saved');
+                    }
+                } catch (emailError) {
+                    console.warn('Email notification not available:', emailError.message);
+                    // Don't fail the whole process if email fails
+                }
+
+                // Hide loading and show success popup
+                loadingDiv.classList.add('hidden');
+                
+                // Show success popup
+                showSuccessPopup(docRef.id, applicationData.applicantInfo.email);
+                
+                // Reset form
+                form.reset();
+
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                loadingDiv.classList.add('hidden');
+                errorDiv.classList.remove('hidden');
+                
+                // Show detailed error information
+                const errorMessage = errorDiv.querySelector('.error-content');
+                if (errorMessage) {
+                    let errorText = 'Une erreur est survenue lors de l\'envoi de votre candidature.';
+                    
+                    if (error.code === 'permission-denied') {
+                        errorText = 'Erreur de permissions. Veuillez réessayer dans quelques minutes.';
+                    } else if (error.code === 'unavailable') {
+                        errorText = 'Service temporairement indisponible. Veuillez réessayer.';
+                    } else if (error.message.includes('network')) {
+                        errorText = 'Problème de connexion. Vérifiez votre internet et réessayez.';
+                    }
+                    
+                    errorMessage.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="mr-3 h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <strong>Erreur lors de l'envoi</strong>
+                                <p class="text-sm text-red-600 mt-1">${errorText}</p>
+                                <p class="text-sm text-red-600">Code d'erreur: ${error.code || 'UNKNOWN'}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Soumettre la Candidature';
+            }
+        };
+
+        // Success popup function
+        function showSuccessPopup(applicationId, email) {
+            const referenceNumber = applicationId.slice(0, 8).toUpperCase();
+            
+            // Create popup HTML
+            const popupHTML = `
+                <div id="successPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 text-center transform animate-scale-in">
+                        <div class="mb-6">
+                            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                                <svg class="h-8 w-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Candidature Envoyée !</h3>
+                            <p class="text-gray-600 mb-4">Votre candidature de partenariat a été soumise avec succès.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                            <div class="text-sm text-gray-600 mb-2">Numéro de référence</div>
+                            <div class="text-lg font-mono font-bold text-blue">${referenceNumber}</div>
+                        </div>
+                        
+                        <div class="text-sm text-gray-600 mb-6">
+                            <p>Nous examinerons votre candidature et vous contacterons à l'adresse :</p>
+                            <p class="font-medium text-blue mt-1">${email}</p>
+                            <p class="mt-2">Vous devriez recevoir une réponse sous 3-5 jours ouvrables.</p>
+                        </div>
+                        
+                        <button id="closePopupBtn" 
+                            class="w-full bg-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add popup to page
+            document.body.insertAdjacentHTML('beforeend', popupHTML);
+            
+            // Add event listener to close button
+            const closeBtn = document.getElementById('closePopupBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', window.closeSuccessPopup);
+            }
+            
+            // Also allow closing by clicking outside the popup
+            const popup = document.getElementById('successPopup');
+            if (popup) {
+                popup.addEventListener('click', function(e) {
+                    if (e.target === popup) {
+                        window.closeSuccessPopup();
+                    }
+                });
+            }
+            
+            // Add animation styles
+            if (!document.getElementById('popup-styles')) {
+                const style = document.createElement('style');
+                style.id = 'popup-styles';
+                style.textContent = `
+                    @keyframes scale-in {
+                        0% { transform: scale(0.9); opacity: 0; }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                    .animate-scale-in {
+                        animation: scale-in 0.3s ease-out;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Close popup function - make it globally accessible
+        window.closeSuccessPopup = function() {
+            const popup = document.getElementById('successPopup');
+            if (popup) {
+                popup.style.transition = 'all 0.3s ease-out';
+                popup.style.opacity = '0';
+                popup.querySelector('.bg-white').style.transform = 'scale(0.9)';
+                setTimeout(() => popup.remove(), 300);
+                
+                // Redirect to partners page after closing
+                setTimeout(() => {
+                    window.location.href = 'partenaires.html';
+                }, 500);
+            }
+        };
+
+        // Form validation for description length
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptionField = document.getElementById('businessDescription');
+            if (descriptionField) {
+                descriptionField.addEventListener('input', function() {
+                    const length = this.value.length;
+                    const counter = this.parentNode.querySelector('.char-counter');
+                    
+                    if (!counter) {
+                        const counterEl = document.createElement('div');
+                        counterEl.className = 'char-counter text-sm text-gray-500 mt-1';
+                        this.parentNode.appendChild(counterEl);
+                    }
+                    
+                    const counterEl = this.parentNode.querySelector('.char-counter');
+                    counterEl.textContent = `${length}/500 caractères`;
+                    
+                    if (length < 50) {
+                        counterEl.className = 'char-counter text-sm text-red-500 mt-1';
+                        this.setCustomValidity('La description doit contenir au moins 50 caractères.');
+                    } else if (length > 500) {
+                        counterEl.className = 'char-counter text-sm text-red-500 mt-1';
+                        this.setCustomValidity('La description ne peut pas dépasser 500 caractères.');
+                    } else {
+                        counterEl.className = 'char-counter text-sm text-green-600 mt-1';
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            // Handle EliteReply account radio buttons
+            const hasAccountRadios = document.querySelectorAll('input[name="hasEliteReplyAccount"]');
+            const accountInfo = document.getElementById('accountInfo');
+            
+            hasAccountRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'yes') {
+                        accountInfo.classList.remove('hidden');
+                    } else {
+                        accountInfo.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .text-green { color: #4CAF50; }
+        .bg-green { background-color: #4CAF50; }
+        .text-blue { color: #2196F3; }
+        .bg-blue { background-color: #2196F3; }
+        .border-green { border-color: #4CAF50; }
+        .border-blue { border-color: #2196F3; }
+        .hover\:bg-blue-600:hover { background-color: #1976D2; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Placeholder -->
+    <div id="header-placeholder"></div>
+
+    <main class="py-16">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">Candidature de Partenariat</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Rejoignez le réseau EliteReply et développez votre entreprise. Remplissez ce formulaire pour soumettre votre candidature.
+                </p>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="loading" class="hidden bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Envoi de votre candidature en cours...
+                </div>
+            </div>
+
+            <div id="success" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+                <div class="success-content">
+                    <div class="flex items-center">
+                        <svg class="mr-3 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Votre candidature a été envoyée avec succès ! Nous vous contacterons bientôt.
+                    </div>
+                </div>
+            </div>
+
+            <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="error-content">
+                    <div class="flex items-center">
+                        <svg class="mr-3 h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <p>Une erreur est survenue.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Form -->
+            <form id="partnerForm" class="bg-white rounded-xl shadow-lg p-8 space-y-8">
+                <!-- Business Information Section -->
+                <div class="border-b border-gray-200 pb-8">
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Informations sur l'Entreprise</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="businessName" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nom de l'entreprise *
+                            </label>
+                            <input type="text" id="businessName" name="businessName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="businessAddress" class="block text-sm font-medium text-gray-700 mb-2">
+                                Adresse *
+                            </label>
+                            <input type="text" id="businessAddress" name="businessAddress" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="businessCity" class="block text-sm font-medium text-gray-700 mb-2">
+                                Ville *
+                            </label>
+                            <input type="text" id="businessCity" name="businessCity" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="businessCountry" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pays *
+                            </label>
+                            <input type="text" id="businessCountry" name="businessCountry" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="businessCategory" class="block text-sm font-medium text-gray-700 mb-2">
+                                Catégorie d'entreprise *
+                            </label>
+                            <select id="businessCategory" name="businessCategory" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                                <option value="">Sélectionnez une catégorie</option>
+                                <option value="restaurant">Restaurant / Alimentation</option>
+                                <option value="hotel">Hôtel / Hébergement</option>
+                                <option value="transport">Transport / Logistique</option>
+                                <option value="retail">Commerce de détail</option>
+                                <option value="services">Services professionnels</option>
+                                <option value="healthcare">Santé / Bien-être</option>
+                                <option value="education">Éducation / Formation</option>
+                                <option value="technology">Technologie / IT</option>
+                                <option value="finance">Finance / Assurance</option>
+                                <option value="entertainment">Divertissement / Loisirs</option>
+                                <option value="beauty">Beauté / Esthétique</option>
+                                <option value="construction">Construction / Immobilier</option>
+                                <option value="agriculture">Agriculture / Agroalimentaire</option>
+                                <option value="automotive">Automobile / Mécanique</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="businessDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description de l'entreprise *
+                            </label>
+                            <textarea id="businessDescription" name="businessDescription" required rows="4"
+                                placeholder="Décrivez brièvement ce que fait votre entreprise, vos services ou produits principaux..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors resize-vertical"></textarea>
+                            <p class="text-sm text-gray-500 mt-1">Minimum 50 caractères, maximum 500 caractères</p>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="businessWebsite" class="block text-sm font-medium text-gray-700 mb-2">
+                                Site web (Optionnel)
+                            </label>
+                            <input type="url" id="businessWebsite" name="businessWebsite"
+                                placeholder="https://www.exemple.com"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="businessLogo" class="block text-sm font-medium text-gray-700 mb-2">
+                                Logo de l'entreprise (Image)
+                            </label>
+                            <input type="file" id="businessLogo" name="businessLogo" accept="image/*"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue file:text-white hover:file:bg-blue-600">
+                            <p class="text-sm text-gray-500 mt-2">Formats acceptés: JPG, PNG, GIF. Taille maximale: 5MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applicant Information Section -->
+                <div>
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Informations du Candidat</h2>
+                    
+                    <!-- EliteReply Account Section -->
+                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                Avez-vous déjà un compte avec EliteReply ? *
+                            </label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" id="hasAccountYes" name="hasEliteReplyAccount" value="yes" required
+                                        class="mr-2 text-blue focus:ring-blue">
+                                    <span class="text-sm text-gray-700">Oui</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" id="hasAccountNo" name="hasEliteReplyAccount" value="no" required
+                                        class="mr-2 text-blue focus:ring-blue">
+                                    <span class="text-sm text-gray-700">Non</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="accountInfo" class="hidden">
+                            <div class="flex items-start space-x-3 p-3 bg-blue-100 rounded-lg">
+                                <svg class="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="text-sm text-blue-800">
+                                    <p class="font-medium mb-1">Important :</p>
+                                    <p>Puisque vous avez déjà un compte EliteReply, veuillez utiliser la <strong>même adresse email</strong> que votre compte dans la section "Email" ci-dessous. Cela nous permettra de lier votre candidature de partenariat à votre compte existant.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                                Prénom *
+                            </label>
+                            <input type="text" id="firstName" name="firstName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nom *
+                            </label>
+                            <input type="text" id="lastName" name="lastName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email *
+                            </label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                            <p class="text-sm text-gray-500 mt-1">Cet email sera utilisé par l'équipe EliteReply pour vous répondre concernant votre candidature.</p>
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                Numéro de téléphone *
+                            </label>
+                            <input type="tel" id="phone" name="phone" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent transition-colors">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-8 border-t border-gray-200">
+                    <div class="flex justify-center">
+                        <button type="button" id="submitBtn" onclick="submitApplication()"
+                            class="px-8 py-4 bg-blue text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                            Soumettre la Candidature
+                        </button>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-4">
+                        En soumettant cette candidature, vous acceptez nos 
+                        <a href="conditions.html" class="text-blue hover:underline">conditions d'utilisation</a> et notre 
+                        <a href="politique.html" class="text-blue hover:underline">politique de confidentialité</a>.
+                    </p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder" class="mt-16"></div>
+</body>
+</html>

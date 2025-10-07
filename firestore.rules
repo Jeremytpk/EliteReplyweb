@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow reading and writing applications
+    match /applications/{document} {
+      allow read, write: if true; // You might want to add authentication here later
+    }
+    
+    // Backward compatibility - allow old collection name too
+    match /partnerApplications/{document} {
+      allow read, write: if true;
+    }
+    
+    // Default rule - deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
