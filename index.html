@@ -84,5 +84,126 @@
 
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl">
+            <button onclick="closeDownloadModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">
+                ×
+            </button>
+            <h3 class="text-2xl font-bold mb-4 text-center">Télécharger EliteReply</h3>
+            <p class="text-gray-600 text-center mb-6">Choisissez votre plateforme</p>
+            
+            <div class="space-y-4">
+                <!-- iOS Button -->
+                <button onclick="downloadIOS()" class="w-full bg-black text-white px-6 py-4 rounded-xl font-semibold hover:bg-gray-800 transition-all flex items-center justify-center space-x-3">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                    </svg>
+                    <span>Télécharger pour iOS</span>
+                </button>
+
+                <!-- Android Button -->
+                <button onclick="showAndroidConfirmation()" class="w-full bg-green text-white px-6 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition-all flex items-center justify-center space-x-3">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.5 11.5 0 0 0-8.94 0L5.65 5.67c-.19-.28-.54-.37-.83-.22-.3.16-.42.54-.26.85l1.84 3.18C2.99 10.82 1 13.97 1 17.5h22c0-3.53-1.99-6.68-5.4-8.02zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+                    </svg>
+                    <span>Télécharger pour Android</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Android Confirmation Modal -->
+    <div id="androidConfirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl">
+            <button onclick="closeAndroidConfirmation()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">
+                ×
+            </button>
+            <div class="text-center mb-6">
+                <div class="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-3">Téléchargement APK</h3>
+                <p class="text-gray-600 mb-4">
+                    Vous êtes sur le point de télécharger un fichier APK. L'application EliteReply n'est pas encore disponible sur Google Play Store.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 text-left mb-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>Note :</strong> Vous devrez peut-être autoriser l'installation d'applications provenant de sources inconnues dans les paramètres de votre appareil Android.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="downloadAndroid()" class="w-full bg-green text-white px-6 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all">
+                    Confirmer le téléchargement
+                </button>
+                <button onclick="closeAndroidConfirmation()" class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Download Modal Functions
+        function openDownloadModal() {
+            document.getElementById('downloadModal').classList.remove('hidden');
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('downloadModal').classList.add('hidden');
+        }
+
+        function downloadIOS() {
+            // Redirect to App Store (replace with actual App Store link when available)
+            alert('L\'application iOS sera bientôt disponible sur l\'App Store!');
+            closeDownloadModal();
+        }
+
+        function showAndroidConfirmation() {
+            document.getElementById('downloadModal').classList.add('hidden');
+            document.getElementById('androidConfirmModal').classList.remove('hidden');
+        }
+
+        function closeAndroidConfirmation() {
+            document.getElementById('androidConfirmModal').classList.add('hidden');
+            document.getElementById('downloadModal').classList.remove('hidden');
+        }
+
+        function downloadAndroid() {
+            // Create a temporary link to download the APK
+            const link = document.createElement('a');
+            link.href = 'file/EliteReply_Android.apk';
+            link.download = 'EliteReply_Android.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Close modals
+            closeAndroidConfirmation();
+            
+            // Show success message
+            setTimeout(() => {
+                alert('Le téléchargement a commencé. Vérifiez votre dossier de téléchargements.');
+            }, 500);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('downloadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDownloadModal();
+            }
+        });
+
+        document.getElementById('androidConfirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAndroidConfirmation();
+            }
+        });
+    </script>
 </body>
 </html>
