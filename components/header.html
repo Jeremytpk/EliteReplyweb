@@ -2,12 +2,12 @@
 <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-6 py-4">
         <!-- Logo and Mobile Menu Button Row -->
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-center items-center mb-4 relative">
             <a href="index.html" class="flex items-center space-x-2">
                 <img src="assets/logo.png" alt="Logo EliteReply" class="h-10 w-10">
                 <span class="text-xl font-bold text-gray-900">EliteReply</span>
             </a>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue transition-colors">
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue transition-colors absolute right-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
@@ -15,13 +15,14 @@
         </div>
         
         <!-- Desktop Navigation Menu -->
-        <nav class="hidden md:flex items-center space-x-2">
+        <nav class="hidden md:flex items-center justify-center space-x-2">
             <a href="index.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Accueil</a>
             <a href="clients.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Clients</a>
             <a href="partenaires.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Partenaires</a>
             <a href="tarifs.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Tarifs</a>
             <a href="politique.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Politique</a>
             <a href="conditions.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Conditions</a>
+            <a href="contact.html" class="nav-link text-gray-600 hover:text-blue transition-all duration-200 px-3 py-2 rounded-lg">Contact</a>
             <button onclick="openDownloadModal()" class="bg-green text-white px-6 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-all shadow-md ml-2 whitespace-nowrap">
                 📱 Télécharger l'Application
             </button>
@@ -32,6 +33,9 @@
         <a href="clients.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Clients</a>
         <a href="partenaires.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Partenaires</a>
         <a href="tarifs.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Tarifs</a>
+        <a href="politique.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Politique</a>
+        <a href="conditions.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Conditions</a>
+        <a href="contact.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Contact</a>
         <a href="politique.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Politique</a>
         <a href="conditions.html" class="mobile-nav-link block px-6 py-3 text-gray-700 hover:bg-gray-100 transition-all duration-200">Conditions</a>
         <button onclick="openDownloadModal()" class="w-full text-left bg-green text-white px-6 py-3 font-semibold hover:bg-opacity-90 transition-all shadow-md whitespace-nowrap">
@@ -157,6 +161,7 @@
             'clients.html': 'Clients',
             'partenaires.html': 'Partenaires', 
             'tarifs.html': 'Tarifs',
+            'contact.html': 'Contact',
             'politique.html': 'Politique de confidentialité',
             'conditions.html': "Conditions d'utilisation",
             'applicationForm.html': 'Formulaire de candidature'
