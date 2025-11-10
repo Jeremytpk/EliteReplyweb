@@ -25,15 +25,20 @@
         .carousel-slide {
             display: none;
             opacity: 0;
+            transition: opacity 0.8s ease-in-out;
         }
         .carousel-slide.active {
             display: block;
             opacity: 1;
         }
+        .carousel-indicator {
+            transition: all 0.3s ease;
+        }
         .carousel-indicator.active {
             background-color: white;
             opacity: 1;
             width: 2rem;
+            transform: scale(1.2);
         }
     </style>
 </head>
@@ -124,14 +129,14 @@
                 <button class="carousel-indicator w-3 h-3 rounded-full bg-white bg-opacity-50 transition-all" data-slide="1"></button>
             </div>
 
-            <!-- Navigation Arrows (Hidden) -->
-            <button id="prevSlide" class="hidden absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Navigation Arrows -->
+            <button id="prevSlide" class="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
-            <button id="nextSlide" class="hidden absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="nextSlide" class="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
             </button>
