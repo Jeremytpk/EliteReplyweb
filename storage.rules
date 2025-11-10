@@ -6,6 +6,12 @@ service firebase.storage {
       allow read, write: if true; // You might want to add authentication and file size/type validation here later
     }
     
+    // Allow public read access to APK files
+    match /downloads/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Only allow writes through admin/backend
+    }
+    
     // Default rule - deny all other access
     match /{allPaths=**} {
       allow read, write: if false;
