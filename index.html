@@ -271,8 +271,9 @@
         function downloadAndroid() {
             // Create a temporary link to download the APK
             const link = document.createElement('a');
-            link.href = '/assets/files/EliteReply_Android.apk';
+            link.href = 'https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media';
             link.download = 'EliteReply_Android.apk';
+            link.target = '_blank';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
