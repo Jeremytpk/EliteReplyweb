@@ -312,7 +312,7 @@
 
 <!-- Android Confirmation Modal -->
 <div id="androidConfirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl">
+    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-8 relative shadow-2xl">
         <button onclick="closeAndroidConfirmation()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">
             ×
         </button>
@@ -399,7 +399,7 @@
 
     window.downloadAndroid = function() {
         const link = document.createElement('a');
-        link.href = 'file/EliteReply_Android.apk';
+        link.href = '/file/EliteReply_Android.apk';
         link.download = 'EliteReply_Android.apk';
         document.body.appendChild(link);
         link.click();
