@@ -399,7 +399,9 @@
 
     window.downloadAndroid = function() {
         const link = document.createElement('a');
-        link.href = 'https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media';
+        // Add timestamp to prevent caching and ensure latest version is downloaded
+        const timestamp = new Date().getTime();
+        link.href = `https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media&t=${timestamp}`;
         link.download = 'EliteReply_Android.apk';
         link.target = '_blank';
         document.body.appendChild(link);
