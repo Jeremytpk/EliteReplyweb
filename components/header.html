@@ -356,9 +356,10 @@
     };
 
     window.downloadIOS = function() {
-        // Redirect to App Store
-        window.open('https://apps.apple.com/us/app/elitereply/id6754297096', '_blank');
+        // Close modal first
         closeDownloadModal();
+        // Redirect to App Store (using location instead of window.open to avoid popup blockers)
+        window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
     };
 
     window.showAndroidConfirmation = function() {

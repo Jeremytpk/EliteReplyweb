@@ -253,9 +253,10 @@
         }
 
         function downloadIOS() {
-            // Redirect to App Store
-            window.open('https://apps.apple.com/us/app/elitereply/id6754297096', '_blank');
+            // Close modal first
             closeDownloadModal();
+            // Redirect to App Store
+            window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
         }
 
         function showAndroidConfirmation() {
