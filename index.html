@@ -256,6 +256,10 @@
         function downloadIOS() {
             // Close modal first
             closeDownloadModal();
+            // Track iOS download
+            if (window.trackEvent) {
+                window.trackEvent('download', { platform: 'ios' });
+            }
             // Redirect to App Store
             window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
         }
@@ -271,6 +275,10 @@
         }
 
         function downloadAndroid() {
+            // Track Android download
+            if (window.trackEvent) {
+                window.trackEvent('download', { platform: 'android' });
+            }
             // Create a temporary link to download the APK
             const link = document.createElement('a');
             // Add timestamp to prevent caching and ensure latest version is downloaded

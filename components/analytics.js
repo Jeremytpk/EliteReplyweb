@@ -16,11 +16,17 @@ function getToday() {
 }
 
 // Utility: Get country from IP (uses ipinfo.io)
+// Utility: Get country from IP using geolocation API
 async function getCountry() {
   try {
-    const res = await fetch("https://ipinfo.io/json?token=YOUR_IPINFO_TOKEN");
-    const data = await res.json();
-    return data.country || "Unknown";
+    // Get user's public IP
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+    const ip = ipData.ip;
+    // Use geolocation API to get country name
+    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+    const geoData = await geoRes.json();
+    return geoData.country_name || geoData.country || "Unknown";
   } catch {
     return "Unknown";
   }

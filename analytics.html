@@ -13,6 +13,54 @@
 <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto py-12 px-4">
         <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Analytics Dashboard</h1>
+        <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+            <div class="flex items-center gap-2">
+                <label for="viewSelect" class="font-semibold">Voir :</label>
+                <select id="viewSelect" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="currentWeek">Semaine en cours</option>
+                    <option value="lastWeek">Semaine dernière</option>
+                    <option value="month">Mois</option>
+                    <option value="year">Année</option>
+                </select>
+                <input type="month" id="monthPick" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 hidden" min="2024-01" max="2025-12">
+                <select id="yearPick" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 hidden">
+                    <option value="">Année...</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="timeFilter" class="font-semibold">Période :</label>
+                <select id="timeFilter" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="week">Semaine</option>
+                    <option value="month">Mois</option>
+                    <option value="year">Année</option>
+                </select>
+                <span id="weekSelectors" style="display:none;">
+                    <label for="weekStart" class="ml-2">De :</label>
+                    <input type="week" id="weekStart" class="border rounded px-2 py-1" />
+                    <label for="weekEnd" class="ml-2">à</label>
+                    <input type="week" id="weekEnd" class="border rounded px-2 py-1" />
+                </span>
+                <span id="monthSelector" style="display:none;">
+                    <label for="monthPick" class="ml-2">Mois :</label>
+                    <input type="month" id="monthPick" class="border rounded px-2 py-1" min="2024-01" />
+                </span>
+                <span id="yearSelector" style="display:none;">
+                    <label for="yearPick" class="ml-2">Année :</label>
+                    <select id="yearPick" class="border rounded px-2 py-1">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </span>
+            </div>
+            <button id="downloadCsvBtn" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-lg">Télécharger CSV</button>
+            <div class="flex items-center gap-2">
+                <input id="emailTo" type="email" placeholder="Email destinataire" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input id="emailTitle" type="text" placeholder="Titre" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button id="sendCsvBtn" class="bg-green-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-lg">Envoyer CSV</button>
+            </div>
+        </div>
         <div id="summary" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"></div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             <div class="bg-white rounded-2xl shadow-lg p-8">
@@ -50,6 +98,48 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        function filterEventsByPeriod(events, period, viewType) {
+            const now = new Date();
+            if (viewType === 'currentWeek') {
+                const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                return events.filter(ev => {
+                    const d = new Date(ev.date);
+                    return d >= start && d <= end;
+                });
+            } else if (viewType === 'lastWeek') {
+                const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() - 7);
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                return events.filter(ev => {
+                    const d = new Date(ev.date);
+                    return d >= start && d <= end;
+                });
+            } else if (viewType === 'month') {
+                const monthPick = document.getElementById('monthPick').value;
+                if (monthPick) {
+                    const [year, month] = monthPick.split('-');
+                    return events.filter(ev => {
+                        const d = new Date(ev.date);
+                        return d.getFullYear() == year && (d.getMonth() + 1) == parseInt(month);
+                    });
+                }
+                return [];
+            } else if (viewType === 'year') {
+                const yearPick = document.getElementById('yearPick').value;
+                if (yearPick) {
+                    return events.filter(ev => {
+                        const d = new Date(ev.date);
+                        return d.getFullYear() == yearPick;
+                    });
+                }
+                return [];
+            }
+            // Default: return all
+            return events;
+        }
+
         async function fetchAnalytics() {
             const datasCol = collection(db, "datas");
             const snapshot = await getDocs(datasCol);
@@ -71,6 +161,30 @@
                 });
             });
             return { summary, visitsByDate, countries, events };
+        }
+
+        function eventsToCsv(events) {
+            const header = ['Date', 'Page', 'Type', 'Country', 'Details'];
+            const rows = events.map(ev => [ev.date, ev.page, ev.type, ev.country, ev.btn ? 'Download' : '']);
+            return [header, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function downloadCsv(csv, title = 'analytics.csv') {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = title;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function sendCsvEmail(csv, to, subject) {
+            // Use Gmail SMTP via EmailJS (client-side) or instruct user to send manually
+            // For security, recommend server-side or EmailJS integration
+            // Here, just open mailto: with CSV attached as workaround
+            const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(csv)}`;
+            window.location.href = mailto;
         }
 
         function renderSummary(summary) {
@@ -146,11 +260,81 @@
         }
 
         async function renderDashboard() {
+            // Show/hide selectors based on period
+            const weekSelectors = document.getElementById('weekSelectors');
+            const monthSelector = document.getElementById('monthSelector');
+            const yearSelector = document.getElementById('yearSelector');
+            function updateSelectors() {
+                const tf = document.getElementById('timeFilter');
+                weekSelectors.style.display = tf.value === 'week' ? '' : 'none';
+                monthSelector.style.display = tf.value === 'month' ? '' : 'none';
+                yearSelector.style.display = tf.value === 'year' ? '' : 'none';
+            }
+            document.getElementById('timeFilter').onchange = updateSelectors;
+            updateSelectors();
             const { summary, visitsByDate, countries, events } = await fetchAnalytics();
-            renderSummary(summary);
-            renderVisitsChart(visitsByDate);
-            renderCountriesChart(countries);
-            renderEventsTable(events);
+            const viewSelect = document.getElementById('viewSelect');
+            const timeFilter = document.getElementById('timeFilter');
+            const monthPick = document.getElementById('monthPick');
+            const yearPick = document.getElementById('yearPick');
+            function updatePickers() {
+                if (viewSelect.value === 'month') {
+                    monthPick.classList.remove('hidden');
+                    yearPick.classList.add('hidden');
+                } else if (viewSelect.value === 'year') {
+                    yearPick.classList.remove('hidden');
+                    monthPick.classList.add('hidden');
+                } else {
+                    monthPick.classList.add('hidden');
+                    yearPick.classList.add('hidden');
+                }
+            }
+            function updateView() {
+                updatePickers();
+                const filtered = filterEventsByPeriod(events, timeFilter.value, viewSelect.value);
+                // Recalculate summary, visitsByDate, countries for filtered events
+                let filteredSummary = { views: 0, clicks: 0, downloads: 0 };
+                let filteredVisitsByDate = {};
+                let filteredCountries = {};
+                filtered.forEach(ev => {
+                    filteredSummary.views += ev.type === 'view' ? 1 : 0;
+                    filteredSummary.clicks += ev.type === 'click' ? 1 : 0;
+                    filteredSummary.downloads += ev.type === 'download' ? 1 : 0;
+                    filteredVisitsByDate[ev.date] = (filteredVisitsByDate[ev.date] || 0) + (ev.type === 'view' ? 1 : 0);
+                    filteredCountries[ev.country] = (filteredCountries[ev.country] || 0) + 1;
+                });
+                renderSummary(filteredSummary);
+                renderVisitsChart(filteredVisitsByDate);
+                renderCountriesChart(filteredCountries);
+                renderEventsTable(filtered);
+            }
+            viewSelect.onchange = updateView;
+            timeFilter.onchange = updateView;
+            monthPick.onchange = updateView;
+            yearPick.onchange = updateView;
+            document.getElementById('weekStart').onchange = updateView;
+            document.getElementById('weekEnd').onchange = updateView;
+            updateView();
+
+            // CSV download and email logic
+            const downloadBtn = document.getElementById('downloadCsvBtn');
+            const sendBtn = document.getElementById('sendCsvBtn');
+            downloadBtn.onclick = () => {
+                const filtered = filterEventsByPeriod(events, timeFilter.value, viewSelect.value);
+                const csv = eventsToCsv(filtered);
+                downloadCsv(csv, `analytics_${viewSelect.value}_${timeFilter.value}.csv`);
+            };
+            sendBtn.onclick = () => {
+                const filtered = filterEventsByPeriod(events, timeFilter.value, viewSelect.value);
+                const csv = eventsToCsv(filtered);
+                const to = document.getElementById('emailTo').value;
+                const subject = document.getElementById('emailTitle').value || 'Analytics CSV';
+                if (to) {
+                    sendCsvEmail(csv, to, subject);
+                } else {
+                    alert('Veuillez entrer un email destinataire.');
+                }
+            };
         }
 
         renderDashboard();
