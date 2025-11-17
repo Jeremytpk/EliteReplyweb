@@ -48,27 +48,34 @@
 </div>
 
 <script>
-    // Track header 'Télécharger l'Application' button click (desktop)
-    document.addEventListener('DOMContentLoaded', function() {
+    // Track header 'Télécharger l'Application' button click (desktop & mobile)
+    function setupTelechargerBtnTracking() {
         var headerBtn = document.getElementById('headerTelechargerBtn');
         if (headerBtn) {
-            headerBtn.addEventListener('click', function() {
+            headerBtn.onclick = function(e) {
+                e.stopPropagation();
                 if (window.trackEvent) {
                     window.trackEvent('click', { button: "Telecharger l'Application" });
                 }
                 openDownloadModal();
-            });
+            };
         }
         var mobileBtn = document.getElementById('mobileTelechargerBtn');
         if (mobileBtn) {
-            mobileBtn.addEventListener('click', function() {
+            mobileBtn.onclick = function(e) {
+                e.stopPropagation();
                 if (window.trackEvent) {
                     window.trackEvent('click', { button: "Telecharger l'Application" });
                 }
                 openDownloadModal();
-            });
+            };
         }
-    });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupTelechargerBtnTracking);
+    } else {
+        setupTelechargerBtnTracking();
+    }
     // Mobile menu toggle functionality and current page highlighting
     (function initializeMobileMenu() {
         const mobileMenuButton = document.getElementById('mobile-menu-button');
