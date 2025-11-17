@@ -2,7 +2,7 @@
 // Replace these values with your actual Firebase project configuration
 // Get these values from: Firebase Console > Project Settings > General > Your apps > Web app
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDtPtoTbl_1NjlfYo0I86jGhuwfsCqzxyk",
   authDomain: "elitereply-bd74d.firebaseapp.com",
   databaseURL: "https://elitereply-bd74d-default-rtdb.firebaseio.com",
@@ -14,4 +14,3 @@ const firebaseConfig = {
 };
 
 // Export the configuration for use in other files
-export default firebaseConfig;
