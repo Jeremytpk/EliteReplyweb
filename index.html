@@ -264,17 +264,12 @@
         }
 
         function downloadIOS() {
-            // Track iOS download, then redirect
+            // Track iOS download immediately, then redirect
             if (window.trackEvent) {
                 window.trackEvent('download', { platform: 'ios', page: 'iOS', type: 'Download' });
-                setTimeout(() => {
-                    closeDownloadModal();
-                    window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
-                }, 300);
-            } else {
-                closeDownloadModal();
-                window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
             }
+            closeDownloadModal();
+            window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
         }
 
         function showAndroidConfirmation() {
