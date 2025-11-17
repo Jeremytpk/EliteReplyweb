@@ -53,6 +53,18 @@ class ComponentLoader {
 // Auto-load components when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     ComponentLoader.loadAll();
+
+    // Data button logic
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'data-btn') {
+            const pass = prompt('Entrez le code d\'accès:');
+            if (pass === 'ER2024') {
+                window.location.href = 'analytics.html';
+            } else if (pass !== null) {
+                alert('Code incorrect.');
+            }
+        }
+    });
 });
 
 // Export for manual use if needed
