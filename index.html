@@ -264,14 +264,17 @@
         }
 
         function downloadIOS() {
-            // Close modal first
-            closeDownloadModal();
-            // Track iOS download as download event, page iOS, type Download
+            // Track iOS download, then redirect
             if (window.trackEvent) {
                 window.trackEvent('download', { platform: 'ios', page: 'iOS', type: 'Download' });
+                setTimeout(() => {
+                    closeDownloadModal();
+                    window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
+                }, 300);
+            } else {
+                closeDownloadModal();
+                window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
             }
-            // Redirect to App Store
-            window.location.href = 'https://apps.apple.com/us/app/elitereply/id6754297096';
         }
 
         function showAndroidConfirmation() {
@@ -285,28 +288,39 @@
         }
 
         function downloadAndroid() {
-            // Track Android download as download event, page Android, type Download
+            // Track Android download, then start download
             if (window.trackEvent) {
                 window.trackEvent('download', { platform: 'android', page: 'Android', type: 'Download' });
+                setTimeout(() => {
+                    // Create a temporary link to download the APK
+                    const link = document.createElement('a');
+                    const timestamp = new Date().getTime();
+                    link.href = `https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media&t=${timestamp}`;
+                    link.download = 'EliteReply_Android.apk';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    closeAndroidConfirmation();
+                    setTimeout(() => {
+                        alert('Le téléchargement a commencé. Vérifiez votre dossier de téléchargements.');
+                    }, 500);
+                }, 300);
+            } else {
+                // Fallback if analytics not loaded
+                const link = document.createElement('a');
+                const timestamp = new Date().getTime();
+                link.href = `https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media&t=${timestamp}`;
+                link.download = 'EliteReply_Android.apk';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                closeAndroidConfirmation();
+                setTimeout(() => {
+                    alert('Le téléchargement a commencé. Vérifiez votre dossier de téléchargements.');
+                }, 500);
             }
-            // Create a temporary link to download the APK
-            const link = document.createElement('a');
-            // Add timestamp to prevent caching and ensure latest version is downloaded
-            const timestamp = new Date().getTime();
-            link.href = `https://firebasestorage.googleapis.com/v0/b/elitereply-bd74d.firebasestorage.app/o/EliteReply_Android.apk?alt=media&t=${timestamp}`;
-            link.download = 'EliteReply_Android.apk';
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Close modals
-            closeAndroidConfirmation();
-            
-            // Show success message
-            setTimeout(() => {
-                alert('Le téléchargement a commencé. Vérifiez votre dossier de téléchargements.');
-            }, 500);
         }
 
         // Close modals when clicking outside
@@ -330,11 +344,10 @@
         let autoSlideInterval;
 
         function showSlide(index) {
-            // Remove active class from all slides and indicators
+            // Guard against out-of-bounds index
+            if (index < 0 || index >= slides.length || index >= indicators.length) return;
             slides.forEach(slide => slide.classList.remove('active'));
             indicators.forEach(indicator => indicator.classList.remove('active'));
-
-            // Add active class to current slide and indicator
             slides[index].classList.add('active');
             indicators[index].classList.add('active');
         }

@@ -19,14 +19,10 @@ function getToday() {
 // Utility: Get country from IP using geolocation API
 async function getCountry() {
   try {
-    // Get user's public IP
-    const ipRes = await fetch('https://api.ipify.org?format=json');
-    const ipData = await ipRes.json();
-    const ip = ipData.ip;
-    // Use geolocation API to get country name
-    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+    // Use ipinfo.io (supports CORS, free tier)
+    const geoRes = await fetch('https://ipinfo.io/json?token=YOUR_TOKEN_HERE');
     const geoData = await geoRes.json();
-    return geoData.country_name || geoData.country || "Unknown";
+    return geoData.country || geoData.country_name || "Unknown";
   } catch {
     return "Unknown";
   }
