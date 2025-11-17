@@ -27,8 +27,44 @@
     <!-- Header Placeholder -->
     <div id="header-placeholder"></div>
 
-    <!-- Contact Section -->
+    <!-- Team Section -->
     <section class="py-16 px-6">
+        <div class="container mx-auto max-w-4xl">
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-[2px]">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Notre équipe</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Founder -->
+                    <div class="flex flex-col items-center text-center">
+                        <img src="assets/images/topaka.png" alt="Jeremy Topaka" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jeremy+Topaka&background=007AFF&color=fff&size=128';">
+                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Jeremy Topaka</h3>
+                        <p class="text-blue font-medium mb-1">Fondateur</p>
+                    </div>
+                    <!-- Marketing -->
+                    <div class="flex flex-col items-center text-center">
+                        <img src="assets/images/knight.jpg" alt="Jessica Knight" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jessica+Knight&background=34C759&color=fff&size=128';">
+                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Jessica Knight</h3>
+                        <p class="text-green font-medium mb-1">Marketing</p>
+                    </div>
+                    <!-- Data Analyst -->
+                    <div class="flex flex-col items-center text-center">
+                        <img src="assets/images/liango.jpg" alt="Mabele Liango" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Mabele+Liango&background=8B5CF6&color=fff&size=128';">
+                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Mabele Liango</h3>
+                        <p class="text-purple-600 font-medium mb-1">Data Analyst</p>
+                    </div>
+                    <!-- Advisor -->
+                    <div class="flex flex-col items-center text-center">
+                        <img src="assets/images/tuan.jpg" alt="Tuan" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Tuan&background=6B7280&color=fff&size=128';">
+                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Tuan</h3>
+                        <p class="text-gray-600 font-medium mb-1">Advisor</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Team Section -->
+    <hr class="border-t-2 border-gray-200 mx-auto" style="max-width: 700px; margin-bottom: 25px;" />
+    <!-- Contact Section -->
+    <section class="px-6" style="margin-top:50px">
         <div class="container mx-auto max-w-4xl">
             <div class="text-center mb-12">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Contactez-nous</h1>
@@ -159,57 +195,25 @@
                 </div>
             </div>
 
-            <!-- Team Section -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 mt-12">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Notre équipe</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Founder -->
-                    <div class="flex flex-col items-center text-center">
-                        <img src="assets/images/topaka.png" alt="Jeremy Topaka" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jeremy+Topaka&background=007AFF&color=fff&size=128';">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Jeremy Topaka</h3>
-                        <p class="text-blue font-medium mb-1">Fondateur</p>
+            <!-- Success Modal -->
+            <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl text-center">
+                    <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
                     </div>
-                    <!-- Marketing -->
-                    <div class="flex flex-col items-center text-center">
-                        <img src="assets/images/knight.jpg" alt="Jessica Knight" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jessica+Knight&background=34C759&color=fff&size=128';">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Jessica Knight</h3>
-                        <p class="text-green font-medium mb-1">Marketing</p>
-                    </div>
-                    <!-- Data Analyst -->
-                    <div class="flex flex-col items-center text-center">
-                        <img src="assets/images/liango.jpg" alt="Mabele Liango" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Mabele+Liango&background=8B5CF6&color=fff&size=128';">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Mabele Liango</h3>
-                        <p class="text-purple-600 font-medium mb-1">Data Analyst</p>
-                    </div>
-                    <!-- Advisor -->
-                    <div class="flex flex-col items-center text-center">
-                        <img src="assets/images/tuan.png" alt="Tuan" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Tuan&background=6B7280&color=fff&size=128';">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-1">Tuan</h3>
-                        <p class="text-gray-600 font-medium mb-1">Advisor</p>
-                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">Message envoyé !</h3>
+                    <p class="text-gray-600 mb-6">
+                        Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais à l'adresse email que vous avez fournie.
+                    </p>
+                    <button onclick="closeSuccessModal()" class="w-full bg-blue text-white px-6 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all">
+                        Fermer
+                    </button>
                 </div>
             </div>
-            <!-- End Team Section -->
         </div>
     </section>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl text-center">
-            <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-            </div>
-            <h3 class="text-2xl font-bold mb-3 text-gray-900">Message envoyé !</h3>
-            <p class="text-gray-600 mb-6">
-                Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais à l'adresse email que vous avez fournie.
-            </p>
-            <button onclick="closeSuccessModal()" class="w-full bg-blue text-white px-6 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all">
-                Fermer
-            </button>
-        </div>
-    </div>
 
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
